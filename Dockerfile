@@ -6,7 +6,7 @@ COPY ${DEPENDENCY}/META-INF /app/META-INF
 COPY ${DEPENDENCY}/BOOT-INF/classes /app
 RUN chmod +x app/docker-entrypoint.sh
 RUN apt update && \
-    apt-get -y install wget \
+    apt-get -y install wget
 RUN KEYSTORE=$JAVA_HOME/lib/security/cacerts && \
     wget https://letsencrypt.org/certs/letsencryptauthorityx1.der && \
     wget https://letsencrypt.org/certs/letsencryptauthorityx2.der && \
