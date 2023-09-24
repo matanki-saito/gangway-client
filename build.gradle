@@ -76,7 +76,7 @@ test {
 }
 
 docker {
-    name "ghcr.io/matanki-saito/gangway-client-app:" + version
+    name "ghcr.io/matanki-saito/gangway-client:" + version
     copySpec.from(tasks.unpack.outputs).into("dependency")
     buildArgs(['DEPENDENCY': "dependency"])
 }
