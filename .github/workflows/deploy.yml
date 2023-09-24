@@ -21,10 +21,10 @@ jobs:
           java-version: 18
       - name: publish application docker to github packages
         run: |
-          echo ${{ secrets.GITHUB_TOKEN  }} | docker login ghcr.io -u matanki-saito --password-stdin
+          echo ${{ secrets.MY_GITHUB_TOKEN  }} | docker login ghcr.io -u matanki-saito --password-stdin
           ./gradlew docker dockerPush
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           GITHUB_USER_NAME: matanki.saito
       - name: update version and tagging
         run: |
