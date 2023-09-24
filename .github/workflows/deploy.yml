@@ -21,7 +21,6 @@ jobs:
           java-version: 18
       - name: publish application docker to github packages
         run: |
-          cd gate
           echo ${{ secrets.GITHUB_TOKEN  }} | docker login ghcr.io -u matanki-saito --password-stdin
           ./gradlew docker dockerPush
         env:
@@ -29,7 +28,6 @@ jobs:
           GITHUB_USER_NAME: matanki.saito
       - name: update version and tagging
         run: |
-          cd gate
           git config --local user.email "matanki.saito@gmail.com"
           git config --local user.name "matanki.saito"
           ./gradlew release -Prelease.useAutomaticVersion=true
