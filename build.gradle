@@ -1,0 +1,95 @@
+buildscript {
+    ext.versions = [
+            'springBootVersion': '3.1.2',
+            'lombok'           : '8.1.0',
+            'mockito'          : '5.4.0',
+            'slf4j'            : '2.0.7',
+            'docker'           : '0.35.0',
+            'release'          : '3.0.2',
+            'logbackDiscord'   : '1.0.0',
+    ]
+
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${versions.springBootVersion}"
+        classpath "io.freefair.gradle:lombok-plugin:${versions.lombok}"
+        classpath("com.palantir.gradle.docker:gradle-docker:${versions.docker}")
+        classpath("net.researchgate:gradle-release:${versions.release}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'io.freefair.lombok'
+apply plugin: 'com.palantir.docker'
+apply plugin: 'net.researchgate.release'
+
+group = 'cloud.popush'
+sourceCompatibility = "18"
+targetCompatibility = "18"
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+bootJar {
+    archiveBaseName = 'gate-clinet-docker'
+    archiveVersion = version
+}
+
+task unpack(type: Copy) {
+    dependsOn bootJar
+    from(zipTree(tasks.bootJar.outputs.files.singleFile))
+    into("build/dependency")
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-web')
+
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-resource-server')
+    implementation('org.springframework.boot:spring-boot-starter-oauth2-client')
+
+    implementation("org.slf4j:slf4j-api:${versions.slf4j}")
+
+    implementation("com.github.napstr:logback-discord-appender:${versions.logbackDiscord}")
+
+    testImplementation platform("org.mockito:mockito-bom:${versions.mockito}")
+    testImplementation('org.mockito:mockito-core')
+    testImplementation('org.mockito:mockito-junit-jupiter')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+docker {
+    name "ghcr.io/matanki-saito/gangway-client-app:" + version
+    copySpec.from(tasks.unpack.outputs).into("dependency")
+    buildArgs(['DEPENDENCY': "dependency"])
+}
+
+release {
+    // [skip ci]をコメントに入れないと、無限ループする
+    preTagCommitMessage = '[skip ci] [Gradle Release Plugin] - pre tag commit: '
+    tagCommitMessage = '[skip ci] [Gradle Release Plugin] - creating tag: '
+    newVersionCommitMessage = '[skip ci] [Gradle Release Plugin] - new version commit: '
+
+    tagTemplate = '${version}'
+
+    git {
+        requireBranch.set('main')
+    }
+}
