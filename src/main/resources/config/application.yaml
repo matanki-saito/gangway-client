@@ -17,4 +17,8 @@ spring:
             redirect-uri: '{baseUrl}/callback/{registrationId}'
         provider:
           keycloak:
-            issuer-uri: https://keycloak.popush.cloud/realms/Abyss
+            authorization-uri: http://keycloak-sv/realms/Abyss/protocol/openid-connect/auth
+            token-uri: http://keycloak-sv/realms/Abyss/protocol/openid-connect/token
+            user-info-uri: http://keycloak-sv/realms/Abyss/protocol/openid-connect/userinfo
+            jwk-set-uri: http://keycloak-sv/realms/Abyss/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
